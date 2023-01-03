@@ -24,7 +24,7 @@ login_window.resizable(0,0)
 #=======================================================================
 #============================backgroundimage===========================
 #======================================================================
-bg_frame = Image.open('C:\\Users\maraki\Desktop\Project Βάσεις\Tkinter Login Page\\background1.png')
+bg_frame = Image.open('background1.png')
 photo = ImageTk.PhotoImage(bg_frame)
 bg_panel = Label(login_window, image=photo)
 bg_panel.image = photo
@@ -44,7 +44,7 @@ heading.place(x=80, y=30, width=300,height=30)
 #=======================================================================
 # ============ Left Side Image===============================================
 #=====================================================================
-side_image = Image.open('C:\\Users\maraki\Desktop\Project Βάσεις\Tkinter Login Page\\vector.png')
+side_image = Image.open('vector.png')
 photo = ImageTk.PhotoImage(side_image)
 side_image_label = Label(label_frame,image=photo, bg='#040405')
 side_image_label.image = photo
@@ -52,7 +52,7 @@ side_image_label.place(x=5, y=100)
 #======================================================================
 # ============ Sign InImage=============================================
 #======================================================================
-sign_in_image = Image.open('C:\\Users\maraki\Desktop\Project Βάσεις\Tkinter Login Page\\hyy.png')
+sign_in_image = Image.open('hyy.png')
 photo = ImageTk.PhotoImage(sign_in_image)
 sign_in_image_label = Label(label_frame, image=photo,bg='#040405')
 sign_in_image_label.image = photo
@@ -79,7 +79,7 @@ username_entry.place(x=580, y=335, width=270)
 username_line = tk.Canvas(label_frame,width=300, height=2.0,bg="#bdb9b1",highlightthickness=0)
 username_line.place(x=550, y=359)
 # ===== Username icon =========
-username_icon = Image.open('C:\\Users\maraki\Desktop\Project Βάσεις\Tkinter Login Page\\username_icon.png')
+username_icon = Image.open('username_icon.png')
 photo = ImageTk.PhotoImage(username_icon)
 username_icon_label = Label(label_frame,image=photo,bg='#040405')
 username_icon_label.image = photo
@@ -97,14 +97,14 @@ password_entry.place(x=580, y=416, width=244)
 password_line = tk.Canvas(label_frame,width=300, height=2.0,bg="#bdb9b1",highlightthickness=0)
 password_line.place(x=550, y=440)
 # ======== Password icon ================
-password_icon = Image.open('C:\\Users\maraki\Desktop\Project Βάσεις\Tkinter Login Page\\password_icon.png')
+password_icon = Image.open('password_icon.png')
 photo = ImageTk.PhotoImage(password_icon)
 password_icon_label = Label(label_frame,image=photo,bg='#040405')
 password_icon_label.image = photo
 password_icon_label.place(x=550, y=414)
 
 # create the login button
-lgn_button = Image.open('C:\\Users\maraki\Desktop\Project Βάσεις\Tkinter Login Page\\btn1.png')
+lgn_button = Image.open('btn1.png')
 photo = ImageTk.PhotoImage(lgn_button)
 lgn_button_label = Label(label_frame,image=photo, bg='#040405')
 lgn_button_label.image = photo
@@ -125,7 +125,7 @@ forgot_button.place(x=630, y=510)
 sign_label = Label(label_frame, text='No account yet?', font=("yu gothic ui", 11, "bold"),
                         relief=tk.FLAT, borderwidth=0, background="#040405", fg='white')
 sign_label.place(x=550, y=560)
-signup_img = PIL.Image.open(r"C:\\Users\\maraki\Desktop\\Project Βάσεις\\Tkinter Login Page\\register.png")
+signup_img = PIL.Image.open(r"register.png")
 img = ImageTk.PhotoImage(signup_img)
 signup_button_label = tk.Button(label_frame,image=img, bg='#98a65d', cursor="hand2",
                                   borderwidth=0, background="#040405", activebackground="#040405",command=lambda:register(login_window))
