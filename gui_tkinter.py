@@ -19,7 +19,7 @@ login_window = tk.Tk()
 
 login_window.title('Login Page')
 login_window.geometry('1166x718')
-login_window.state('zoomed')
+#login_window.state('zoomed')
 login_window.resizable(0,0)
 #=======================================================================
 #============================backgroundimage===========================
@@ -31,7 +31,7 @@ bg_panel.image = photo
 bg_panel.pack(fill='both', expand='yes')
 # ====== Login Frame =========================
 label_frame = tk.Frame(login_window, bg='#040405',width=950,height=600)
-label_frame.place(x=200, y=70)
+label_frame.place(x=100, y=60)
 #=======================================================================
 #=======================================================
 #======================================================================
@@ -213,8 +213,8 @@ def check_login(username, password):
         sort_ascending_button.pack()
         sort_descending_button.pack()
 
-        # create the buttons for each option
-        tickets_button = tk.Button(admin_menu, text='TICKETS', command=lambda: view_table('TICKET', search_entry.get(),equals_entry.get(), sort_entry.get(), sort_order.get()))
+        
+        tickets_button = tk.Button(admin_menu, text='TICKETS',image=tickets_button, command=lambda: view_table('TICKET', search_entry.get(),equals_entry.get(), sort_entry.get(), sort_order.get()))
         tickets_button.pack()
         
         distributions_button = tk.Button(admin_menu, text='ΔΙΑΝΟΜΕΙΣ', command=lambda: view_table('ΔΙΑΝΟΜΕΑΣ', search_entry.get(),equals_entry.get() ,sort_entry.get(), sort_order.get()))
@@ -237,6 +237,9 @@ def check_login(username, password):
         products_button = tk.Button(admin_menu, text='ΚΑΤΗΓΟΡΙΑ ΠΡΟΙΟΝΤΟΣ', command=lambda: view_table('ΠΡΟΙΟΝ', search_entry.get(),equals_entry.get() , sort_entry.get(), sort_order.get()))
         products_button.pack()
         
+        average_costs = tk.Button(admin_menu, text='Average Costs', command=lambda: get_avg_costs())
+        average_costs.pack()
+
         logout_button = tk.Button(admin_menu, text='Logout', command=admin_menu.destroy)
         logout_button.pack()
 
@@ -246,19 +249,28 @@ def check_login(username, password):
         account = cursor.fetchone()
         
         if account:
-            # create the customer menu
+            
+            import tkinter as tk
+            from tkinter import PhotoImage
+
+            # create the main window
             customer_menu = tk.Toplevel(login_window)
             customer_menu.title('Customer Menu')
-            customer_id = account[0]
             # create the buttons for each option
+            customer_id = account[0]
             view_orders_button = tk.Button(customer_menu, text='View Orders', command=lambda: view_history(customer_id))
+
+            # use the pack geometry manager to display the buttons on top of the image
             view_orders_button.pack()
-            
+
             place_order_button = tk.Button(customer_menu, text='Place Order', command=lambda:place_order(username))
             place_order_button.pack()
-            
+
             logout_button = tk.Button(customer_menu, text='Logout', command=customer_menu.destroy)
             logout_button.pack()
+
+
+
         else:
             # create the error window
             error_window = tk.Toplevel(login_window)
@@ -293,7 +305,7 @@ def view_table(table_name, search_criteria=None,equalsto=None,sort_column=None, 
     table_window = tk.Toplevel(login_window)
     table_window.title(table_name)
     
-    print(data)
+    
     if data:
     # display the data in the table
         for i, row in enumerate(data):
@@ -353,16 +365,17 @@ def place_order(username):
     # create the function to populate the restaurant dropdown menu with the restaurants that offer the selected product
     def get_restaurants(event,a,b):
         # clear the restaurant dropdown menu
-        
+        menu_list.delete(0,'end')
         # retrieve the restaurants that offer the selected product
         cursor.execute(f'SELECT DISTINCT "Όνομα","Κόστος" FROM ΔΙΑΤΙΘΕΤΑΙ NATURAL JOIN ΚΑΤΑΣΤΗΜΑ NATURAL JOIN ΠΡΟΙΟΝ WHERE "Κατηγορία"="{product_var.get()}"')
         results = cursor.fetchall()
-        
         # add the restaurants to the dropdown menu
         for result in results:
             menu_list.insert('end', f'{result[0]} ({result[1]:.2f} €)')
+        return result[0]
     # bind the get_restaurants function to the productdropdownmenu
     product_var.trace('w', get_restaurants)
+    
     # create the restaurant selection dropdown menu
     # create the menu display list box
     menu_label = tk.Label(order_window, text='Select a restaurant:')
@@ -373,6 +386,7 @@ def place_order(username):
     summary_list = tk.Listbox(order_window)
     summary_list.pack()
     summary_list.insert(tk.END)   
+    
     # create the add to order button
     add_button = tk.Button(order_window, text='Add to Order', command=lambda: add_to_order(order_window,summary_list))
     add_button.pack()
@@ -382,9 +396,8 @@ def place_order(username):
     # create the order summary list box
     # create the submit order button
     
-    restaurant_var = tk.StringVar()
-
-    submit_button = tk.Button(order_window,text='Submit Order',command=lambda:submit_order(summary_list,username,payment_method_var.get(),restaurant_var.get()))
+    
+    submit_button = tk.Button(order_window,text='Submit Order',command=lambda:submit_order(summary_list,username,payment_method_var.get()))
     submit_button.pack()
     # create the payment method selection dropdown menu
     payment_method_label = tk.Label(order_window, text='Select a payment method:')
@@ -395,32 +408,18 @@ def place_order(username):
     payment_method_dropdown.pack()
 
     # create the function to populate the menu list box withtheitems from the selected restaurant
-def get_menu(event):
-    # clear the menu list
-    menu_list.delete(0, tk.END)
-    
-    # retrieve the menu items for the selected restaurant
-    cursor.execute(f'SELECT "Κατηγορία","Κόστος" FROM "ΔΙΑΤΙΘΕΤΑΙ" NATURAL JOIN "ΚΑΤΑΣΤΗΜΑ" NATURAL JOIN "ΠΡΟΙΟΝ" WHERE "Όνομα"="{restaurant_var.get()}"')
-    results = cursor.fetchall()
-    
-    # add the menu items to the list box
-    for result in results:
-        menu_list.insert(tk.END, f'{result[0]}: ${result[1]:.2f}')
-    # bind the get_menu function to the restaurant dropdown menu
-    restaurant_var.trace('w', get_menu)
-    # create the function to add a selected item to the order summary
 
-def add_to_order(order_window,summary_list):
-    summary_list = tk.Listbox(order_window)
-    summary_list.pack()
-    summary_list.insert(tk.END)   
+
+def add_to_order(order_window, summary_list):
     # retrieve the selected items from the menu list box
     selection = menu_list.curselection()
-    item = menu_list.get(selection[0])
-    summary_list.insert(tk.END, item)
+    for index in selection:
+        item = menu_list.get(index)
+        summary_list.insert(tk.END, item)
+
 
 # create the function to submitthe order
-def submit_order(summary_list,username,payment_method,restaurant):
+def submit_order(summary_list,username,payment_method):
     # retrieve the order items from the summary list
     order_items = {}
     for i in range(summary_list.size()):
@@ -433,8 +432,8 @@ def submit_order(summary_list,username,payment_method,restaurant):
     # retrieve the customer's ID
     cursor.execute(f'SELECT "ID Πελάτη" FROM ΠΕΛΑΤΗΣ WHERE Username="{username}"')
     customer_id = cursor.fetchone()[0]
-    cursor.execute(f'SELECT "Κόστος" FROM "ΔΙΑΤΙΘΕΤΑΙ" NATURAL JOIN "ΚΑΤΑΣΤΗΜΑ" NATURAL JOIN "ΠΡΟΙΟΝ" WHERE "Όνομα"="{restaurant}"')
-    kostos = cursor.fetchall()
+    
+    
     id_paraggelias = random.randint(1000000000,9999999999)
     id_dianomea = random.randint(1,9)
     xronos_paradwshs = random.randint(10,50)
@@ -443,7 +442,7 @@ def submit_order(summary_list,username,payment_method,restaurant):
     
     # create a new order in the database
 
-    cursor.execute(f'insert into ΠΑΡΑΓΓΕΛΙΑ("ID Παραγγελίας","Κόστος","Χρόνος Παράδοσης","Τρόπος πληρωμής","ID Διανομέα","ID Πελάτη") values ("{id_paraggelias}","{kostos}","{xronos_paradwshs}","{payment_method}","{id_dianomea}","{customer_id}")')
+    cursor.execute(f'insert into ΠΑΡΑΓΓΕΛΙΑ("ID Παραγγελίας","ID Καταστήματος","Χρόνος Παράδοσης","Τρόπος πληρωμής","ID Διανομέα","ID Πελάτη") values ("{id_paraggelias}","{restaurant}","{xronos_paradwshs}","{payment_method}","{id_dianomea}","{customer_id}")')
     db.commit()
     
     
@@ -463,6 +462,23 @@ def get_restaurant_names():
     results = cursor.fetchall()
     return [result[0] for result in results]
 
+def get_avg_costs():
+    cursor.execute('SELECT "Όνομα",avg("Κόστος") as mesos_oros FROM ΚΑΤΑΣΤΗΜΑ NATURAL JOIN ΔΙΑΤΙΘΕΤΑΙ Group by "Όνομα"')
+    data = cursor.fetchall()
+
+
+    table_window = tk.Toplevel(login_window)
+    
+    if data:
+    # display the data in the table
+        for i, row in enumerate(data):
+            for j, cell in enumerate(row):
+                label = tk.Label(table_window, text=cell, font=('Arial', 12))
+                label.grid(row=i+1, column=j, sticky='nsew')
+            
+    # configure the grid layout
+    for i in range(len(data)):
+        table_window.grid_columnconfigure(i, weight=1)
 # run the main loop
 login_window.mainloop()
 
