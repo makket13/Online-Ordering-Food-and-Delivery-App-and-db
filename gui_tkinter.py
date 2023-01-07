@@ -395,7 +395,7 @@ def place_order(username):
     menu_list.pack()
     summary_list = tk.Listbox(order_window)
     summary_list.pack()
-    summary_list.insert(tk.END)   
+    summary_list.insert(tk.END)
     
     # create the add to order button
     add_button = tk.Button(order_window, text='Add to Order', command=lambda: add_to_order(order_window,summary_list))
@@ -407,7 +407,7 @@ def place_order(username):
     # create the submit order button
     
     
-    submit_button = tk.Button(order_window,text='Submit Order',command=lambda:submit_order(summary_list,username,payment_method_var.get()))
+    submit_button = tk.Button(order_window,text='Submit Order',command=lambda:submit_order(summary_list,username,payment_method_var.get(),restaurant))
     submit_button.pack()
     # create the payment method selection dropdown menu
     payment_method_label = tk.Label(order_window, text='Select a payment method:')
@@ -429,7 +429,7 @@ def add_to_order(order_window, summary_list):
 
 
 # create the function to submitthe order
-def submit_order(summary_list,username,payment_method):
+def submit_order(summary_list, username, payment_method, restaurant):
     # retrieve the order items from the summary list
     order_items = {}
     for i in range(summary_list.size()):
@@ -443,22 +443,18 @@ def submit_order(summary_list,username,payment_method):
     cursor.execute(f'SELECT "ID Πελάτη" FROM ΠΕΛΑΤΗΣ WHERE Username="{username}"')
     customer_id = cursor.fetchone()[0]
     
-    
     id_paraggelias = random.randint(1000000000,9999999999)
     id_dianomea = random.randint(1,9)
     xronos_paradwshs = random.randint(10,50)
     
-    
-    
     # create a new order in the database
-
     cursor.execute(f'insert into ΠΑΡΑΓΓΕΛΙΑ("ID Παραγγελίας","ID Καταστήματος","Χρόνος Παράδοσης","Τρόπος πληρωμής","ID Διανομέα","ID Πελάτη") values ("{id_paraggelias}","{restaurant}","{xronos_paradwshs}","{payment_method}","{id_dianomea}","{customer_id}")')
     db.commit()
-    
     
     # clear the order summary and close the order window
     summary_list.delete(0, tk.END)
     order_window.destroy()
+
 # create the function to cancelthe order
 
 # create the function toretrieve the names of theproductsin the database
