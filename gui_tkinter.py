@@ -214,7 +214,7 @@ def check_login(username, password):
         sort_descending_button.pack()
 
         
-        tickets_button = tk.Button(admin_menu, text='TICKETS',image=tickets_button, command=lambda: view_table('TICKET', search_entry.get(),equals_entry.get(), sort_entry.get(), sort_order.get()))
+        tickets_button = tk.Button(admin_menu, text='TICKETS', command=lambda: view_table('TICKET', search_entry.get(),equals_entry.get(), sort_entry.get(), sort_order.get()))
         tickets_button.pack()
         
         distributions_button = tk.Button(admin_menu, text='ΔΙΑΝΟΜΕΙΣ', command=lambda: view_table('ΔΙΑΝΟΜΕΑΣ', search_entry.get(),equals_entry.get() ,sort_entry.get(), sort_order.get()))
@@ -249,28 +249,19 @@ def check_login(username, password):
         account = cursor.fetchone()
         
         if account:
-            
-            import tkinter as tk
-            from tkinter import PhotoImage
-
-            # create the main window
+            # create the customer menu
             customer_menu = tk.Toplevel(login_window)
             customer_menu.title('Customer Menu')
-            # create the buttons for each option
             customer_id = account[0]
+            # create the buttons for each option
             view_orders_button = tk.Button(customer_menu, text='View Orders', command=lambda: view_history(customer_id))
-
-            # use the pack geometry manager to display the buttons on top of the image
             view_orders_button.pack()
-
+            
             place_order_button = tk.Button(customer_menu, text='Place Order', command=lambda:place_order(username))
             place_order_button.pack()
-
+            
             logout_button = tk.Button(customer_menu, text='Logout', command=customer_menu.destroy)
             logout_button.pack()
-
-
-
         else:
             # create the error window
             error_window = tk.Toplevel(login_window)
@@ -305,18 +296,37 @@ def view_table(table_name, search_criteria=None,equalsto=None,sort_column=None, 
     table_window = tk.Toplevel(login_window)
     table_window.title(table_name)
     
+    # create a canvas widget to hold the table
+    canvas = tk.Canvas(table_window)
+    canvas.pack(side='left', fill='both', expand=True)
+    
+    # create a frame to hold the table labels
+    frame = tk.Frame(canvas)
+    frame.pack()
+    
+    # create a vertical scrollbar for the canvas
+    scrollbar = tk.Scrollbar(table_window, orient='vertical', command=canvas.yview)
+    scrollbar.pack(side='right', fill='y')
+    
+    canvas.configure(yscrollcommand=scrollbar.set)
+    
+    # bind the frame to the canvas scroll area
+    canvas.create_window((0,0), window=frame, anchor='nw')
     
     if data:
-    # display the data in the table
+        # display the data in the table
         for i, row in enumerate(data):
             for j, cell in enumerate(row):
-                label = tk.Label(table_window, text=cell, font=('Arial', 12))
+                label = tk.Label(frame, text=cell, font=('Arial', 12))
                 label.grid(row=i+1, column=j, sticky='nsew')
             
     # configure the grid layout
     for i in range(len(data)):
-        table_window.grid_columnconfigure(i, weight=1)
-
+        frame.grid_columnconfigure(i, weight=1)
+        
+    # update the canvas scrollregion
+    frame.update_idletasks()
+    canvas.configure(scrollregion=canvas.bbox('all'))
 
 def view_history(customer_id):
     # create the history window
